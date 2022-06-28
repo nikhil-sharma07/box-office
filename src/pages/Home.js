@@ -1,20 +1,35 @@
 import React, {useState} from 'react'
 import MainPageLayout from '../components/MainPageLayout'
+import { apiGet } from '../misc/config';
 
 const Home = () => {
 const [input, setInput] = useState('');
+const [results, setResults] = useState(null);
 
-const onClick= async () => {
-  const data=await fetch(`https://api.tvmaze.com/search/shows?q=${input}`);
-  console.log(data.json());
-  //fetch(`https://api.tvmaze.com/search/shows?q=girls`).then(res => res.json()).then(result => {console.log(result);});
+
+const renderResults = () => {
+  if(results && results.length === 0){
+    return <div>No Results!</div>
+  }else if(results && results.length > 0){
+    return <div>{results.map((item) => <div key={item.show.id}> {item.show.name} </div>)} </div>
+  }
+
+  return null;
+}
+
+const onSearch= async () => {
+  apiGet(`/search/shows?q=${input}`)
+     .then(result => {
+      setResults(result);
+      //console.log(result);
+     })
 }
 
 const onKeyDown = ev => {
   if(ev.keyCode===13){
-    onClick();
+    onSearch();
   }
-  console.log(ev.keyCode);
+  //console.log(ev.keyCode);
 }
 
 const onChange=(ev)=>{
@@ -24,7 +39,8 @@ const onChange=(ev)=>{
   return (
     <MainPageLayout>
       <input type="text" onChange={onChange}  onKeyDown={onKeyDown} value={input}></input>
-      <button type="button" onClick={onClick}>Search</button>
+      <button type="button" onClick={onSearch}>Search</button>
+      {renderResults()}
     </MainPageLayout>
   )
 }
