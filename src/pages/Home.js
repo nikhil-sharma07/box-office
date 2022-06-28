@@ -1,6 +1,9 @@
 import React, {useState} from 'react'
 import MainPageLayout from '../components/MainPageLayout'
-import { apiGet } from '../misc/config';
+import { apiGet } from '../misc/config'
+import ShowGrid from '../components/show/ShowGrid'
+import ActorGrid from '../components/actor/ActorGrid'
+
 
 const Home = () => {
 const [input, setInput] = useState('');
@@ -14,11 +17,10 @@ const renderResults = () => {
   if(results && results.length === 0){
     return <div>No Results!</div>
   }else if(results && results.length > 0){
-    //const val=isShowSearch? 'shows' : 'person';
     if(results[0].show)
-      return <div>{results.map((item) => <div key={item.show.id}> {item.show.name} </div>)} </div>
+      return <ShowGrid data={results}/>
     else
-      return <div>{results.map((item) => <div key={item.person.id}> {item.person.name} </div>)} </div>
+      return <ActorGrid data={results}/>
   }
 
   return null;
@@ -28,7 +30,6 @@ const onSearch= async () => {
   apiGet(`/search/${isShowSearch ? 'shows' : 'people'}?q=${input}`)
      .then(result => {
       setResults(result);
-      //console.log(result);
      })
 }
 
@@ -36,7 +37,6 @@ const onKeyDown = ev => {
   if(ev.keyCode===13){
     onSearch();
   }
-  //console.log(ev.keyCode);
 }
 
 
